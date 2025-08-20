@@ -32,7 +32,7 @@ async function upsertRating({ userId, storeId, value }) {
       await store.save({ session });
       newRatingDoc = existing;
     } else {
-    
+
       newRatingDoc = existing;
     }
 

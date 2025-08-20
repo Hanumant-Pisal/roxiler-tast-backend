@@ -15,7 +15,7 @@ const env = {
   JWT_EXPIRES_IN: process.env.JWT_EXPIRES_IN || '15m',
   REFRESH_SECRET: process.env.REFRESH_SECRET,
   REFRESH_EXPIRES_IN: process.env.REFRESH_EXPIRES_IN || '7d',
-  FRONTEND_ORIGINS: process.env.FRONTEND_ORIGINS || 'http://localhost:5174',
+  FRONTEND_ORIGINS: process.env.FRONTEND_ORIGINS || 'http://localhost:5173',
   NODE_ENV: process.env.NODE_ENV || 'development'
 };
 

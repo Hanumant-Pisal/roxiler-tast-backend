@@ -52,6 +52,9 @@ async function handleLogout(_req, res) {
   res.clearCookie('accessToken').clearCookie('refreshToken').json({ message: 'Logged out' });
 }
 
+
+
+
 async function handleMe(req, res, next) {
   try {
     const user = await User.findById(req.user.id).lean();
