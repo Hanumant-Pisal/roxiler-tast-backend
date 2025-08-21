@@ -42,7 +42,10 @@ async function handleLogin(req, res, next) {
     res
       .cookie('accessToken', accessToken, cookieOpts(15 * 60 * 1000))
       .cookie('refreshToken', refreshToken, cookieOpts(7 * 24 * 60 * 60 * 1000))
-      .json({ user: sanitizeUser(user) });
+      .json({ user: sanitizeUser(user), tokens: {
+        accessToken,
+        refreshToken,
+      } });
   } catch (err) {
     next(err);
   }

@@ -80,11 +80,19 @@ async function getOwnerStore(ownerId) {
   return store;
 }
 
-async function getOwnerStoreRatings(ownerId, { page = 1, limit = 10, search }) {
-  const store = await Store.findOne({ ownerId }, '_id name').lean();
-  if (!store) throw new Error('Store not found for this owner');
+async function getOwnerStoreRatings(ownerId, { page = 1, limit = 10, search, storeId }) {
+  // If storeId is provided, get ratings for that specific store
+  // Otherwise, get all stores for the owner and show their ratings
+  const storeMatch = storeId ? { _id: storeId, ownerId } : { ownerId };
+  
+  const stores = await Store.find(storeMatch, '_id name').lean();
+  if (!stores || stores.length === 0) {
+    throw new Error('No stores found for this owner');
+  }
 
-  const match = { storeId: store._id };
+  const storeIds = stores.map(store => store._id);
+  const match = { storeId: { $in: storeIds } };
+  
   const userMatch = search
     ? { $or: [{ name: regex(search) }, { email: regex(search) }, { address: regex(search) }] }
     : {};
@@ -100,19 +108,45 @@ async function getOwnerStoreRatings(ownerId, { page = 1, limit = 10, search }) {
         as: 'user'
       }
     },
+    {
+      $lookup: {
+        from: 'stores',
+        localField: 'storeId',
+        foreignField: '_id',
+        pipeline: [{ $project: { name: 1 } }],
+        as: 'storeInfo'
+      }
+    },
     { $unwind: '$user' },
-    { $project: { value: 1, createdAt: 1, 'user.name': 1, 'user.email': 1, 'user.address': 1 } },
+    { $unwind: '$storeInfo' },
+    { 
+      $project: { 
+        value: 1, 
+        createdAt: 1, 
+        storeId: 1,
+        'storeInfo.name': 1,
+        'user.name': 1, 
+        'user.email': 1, 
+        'user.address': 1 
+      } 
+    },
     { $sort: { createdAt: -1 } },
     { $skip: (Number(page) - 1) * Number(limit) },
     { $limit: Number(limit) }
   ];
 
-  const [items, totalArr] = await Promise.all([
+  const [items, total] = await Promise.all([
     require('mongoose').model('Rating').aggregate(pipeline),
     require('mongoose').model('Rating').countDocuments(match)
   ]);
 
-  return { store, items, total: totalArr, page: Number(page), limit: Number(limit) };
+  return { 
+    stores: stores.map(s => ({ _id: s._id, name: s.name })),
+    items, 
+    total, 
+    page: Number(page), 
+    limit: Number(limit) 
+  };
 }
 
 module.exports = {

@@ -31,11 +31,11 @@ const userSchema = new mongoose.Schema(
       default: 'user',
       required: true
     },
-    storeId: {
+    storeIds: [{
       type: mongoose.Schema.Types.ObjectId,
       ref: 'Store',
-      default: null
-    }
+      default: []
+    }],
   },
   { timestamps: true }
 );
