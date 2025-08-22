@@ -8,7 +8,7 @@
 
 const { connectDB } = require('./src/config/db');
 const app = require('./src/app');
-const { env } = require('./src/config/env');
+
 
 // Connect DB once for serverless environment
 connectDB().catch(err => console.error('MongoDB connection failed:', err));
