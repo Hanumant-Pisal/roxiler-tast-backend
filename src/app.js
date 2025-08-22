@@ -21,7 +21,7 @@ app.use(morgan('dev'));
 app.use(express.json());
 app.use(cookieParser());
 
-const allowedOrigins = (env.FRONTEND_ORIGINS || '').split(',').map(s => s.trim()).filter(Boolean);
+const allowedOrigins = (env.FRONTEND_ORIGINS || 'https://roxiler-tast-frontendhanumantpisal.vercel.app').split(',').map(s => s.trim()).filter(Boolean);
 app.use(
   cors({
     origin: function (origin, cb) {
