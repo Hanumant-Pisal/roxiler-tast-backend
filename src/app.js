@@ -33,6 +33,15 @@ app.use(
 );
 
 
+app.get('/', (_req, res) => {
+  res.json({
+    message: 'Backend API is running',
+    health: '/health',
+    docs: '/api'
+  });
+});
+
+
 app.get('/health', (_req, res) => res.json({ status: 'ok' }));
 
 
